@@ -1,9 +1,6 @@
-# Dataset
-dataset/
-
 # Virtual environment
-venv/
 .venv/
+venv/
 
 # Python
 __pycache__/
@@ -12,9 +9,16 @@ __pycache__/
 # Jupyter
 .ipynb_checkpoints/
 
+# Dataset
+dataset/
+
 # Generated artifacts
 artifacts/
+
+# Trained models
 models/
+
+# Logs
 logs/
 
 # Environment variables
@@ -23,3 +27,7 @@ logs/
 # IDE
 .vscode/
 .idea/
+
+# OS
+.DS_Store
+Thumbs.db
