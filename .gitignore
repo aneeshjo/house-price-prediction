@@ -1,0 +1,25 @@
+# Dataset
+dataset/
+
+# Virtual environment
+venv/
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Generated artifacts
+artifacts/
+models/
+logs/
+
+# Environment variables
+.env
+
+# IDE
+.vscode/
+.idea/
