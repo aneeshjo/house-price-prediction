@@ -1,0 +1,6 @@
+artifacts_root: artifacts
+
+data_ingestion_config:
+  root_dir: artifacts/data_ingestion
+  source_URL: datasset/AmesHousing.txt
+  local_data_file: artifacts/data_ingestion/AmesHousing.txt
