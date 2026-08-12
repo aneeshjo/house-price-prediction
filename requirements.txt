@@ -9,3 +9,5 @@ pytest==9.1.1
 python-box==7.4.1
 jupyter==1.1.1
 
+-e .
+
