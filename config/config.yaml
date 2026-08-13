@@ -4,3 +4,7 @@ data_ingestion:
   root_dir: artifacts/data_ingestion
   source_file: dataset/AmesHousing.txt
   local_data_file: artifacts/data_ingestion/AmesHousing.txt
+
+data_validation:
+  root_dir: artifacts/data_validation
+  status_file: artifacts/data_validation/status.txt

@@ -1,2 +1,8 @@
 TARGET_COLUMN:
   name: SalePrice
+
+DATA_VALIDATION:
+  expected_columns: 82
+  expected_rows_min: 1
+  required_columns:
+    - SalePrice
