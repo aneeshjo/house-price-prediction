@@ -1,5 +1,6 @@
 from pathlib import Path
 import shutil
+import sys
 
 from house_price_prediction.entity.config_entity import (
     DataIngestionConfig,
@@ -66,5 +67,5 @@ class DataIngestion:
 
             raise HousePricePredictionException(
                 e,
-                __import__("sys"),
+                sys,
             ) from e

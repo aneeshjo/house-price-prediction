@@ -1,0 +1,6 @@
+[2026-08-12 19:40:53,408] INFO house_price_prediction - ========== Stage 01: Data Ingestion ==========
+[2026-08-12 19:40:53,408] INFO house_price_prediction - Starting data ingestion.
+[2026-08-12 19:40:53,408] INFO house_price_prediction - Source file: dataset\AmesHousing.txt
+[2026-08-12 19:40:53,408] INFO house_price_prediction - Destination file: artifacts\data_ingestion\AmesHousing.txt
+[2026-08-12 19:40:53,418] INFO house_price_prediction - Raw dataset copied successfully.
+[2026-08-12 19:40:53,418] INFO house_price_prediction - Data ingestion completed: artifacts\data_ingestion\AmesHousing.txt
