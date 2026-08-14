@@ -1,8 +1,12 @@
 from pathlib import Path
 import sys
+
 import pandas as pd
 
-from house_price_prediction.utils.exception import HousePricePredictionException
+from house_price_prediction.utils.exception import (
+    HousePricePredictionException,
+)
+
 from house_price_prediction.utils.logger import logger
 
 from house_price_prediction.entity.config_entity import (
@@ -11,19 +15,31 @@ from house_price_prediction.entity.config_entity import (
 
 
 class DataValidation:
-    def __init__(self, config: DataValidationConfig):
+
+    def __init__(
+        self,
+        config: DataValidationConfig,
+    ):
+
         self.config = config
-        self.results=[]
-        self.df=None
+        self.results = []
+        self.df = None
 
     # ======================================================
     # File Validation
     # ======================================================
 
-    def validate_file(self,data_path:str) -> bool:
+    def validate_file(
+        self,
+        data_path: str,
+    ) -> bool:
+
         try:
+
             path = Path(data_path)
+
             if not path.exists():
+
                 self.results.append(
                     {
                         "check": "File existence",
@@ -33,7 +49,9 @@ class DataValidation:
                         ),
                     }
                 )
+
                 return False
+
             if path.stat().st_size == 0:
 
                 self.results.append(
@@ -59,110 +77,173 @@ class DataValidation:
             )
 
             return True
+
         except Exception as e:
-            raise HousePricePredictionException(e, sys) from e
+
+            raise HousePricePredictionException(
+                e,
+                sys,
+            ) from e
+
     # ======================================================
     # Load Dataset
     # ======================================================
 
-    def load_dataset(self,data_path:str) -> None:
+    def load_dataset(
+        self,
+        data_path: str,
+    ) -> None:
+
         try:
+
             logger.info(
                 f"Loading dataset from: {data_path}"
             )
-            self.df = pd.read_csv(data_path,sep='\t')
+
+            self.df = pd.read_csv(
+                data_path,
+                sep="\t",
+            )
+
             logger.info(
                 f"Dataset loaded successfully. "
                 f"Shape: {self.df.shape}"
             )
 
         except Exception as e:
-            raise HousePricePredictionException(e, sys) from e
+
+            raise HousePricePredictionException(
+                e,
+                sys,
+            ) from e
 
     # ======================================================
     # Shape Validation
     # ======================================================
 
     def validate_shape(self) -> bool:
+
         try:
+
             if self.df is None:
+
                 raise ValueError(
                     "Dataset not loaded. "
                     "Call load_dataset() first."
                 )
-            rows, columns = self.df.shape
-            expected_rows = self.config.expected_rows_min
-            actual_rows = self.df.shape[0]
+
+            actual_rows, actual_columns = (
+                self.df.shape
+            )
+
+            expected_rows = (
+                self.config.expected_rows_min
+            )
+
+            expected_columns = (
+                self.config.expected_columns
+            )
+
+            # ------------------------------------------------
+            # Minimum Row Count
+            # ------------------------------------------------
 
             if actual_rows < expected_rows:
+
                 self.results.append(
                     {
-                        "check": "Row count",
+                        "check": "Minimum row count",
                         "status": "FAIL",
                         "message": (
-                            f"Row count is less than expected. "
-                            f"Expected: {expected_rows}, "
-                            f"Actual: {actual_rows}"
+                            f"Expected at least "
+                            f"{expected_rows} rows, "
+                            f"but found {actual_rows}."
                         ),
                     }
                 )
+
                 return False
-            if columns != self.config.expected_columns:
+
+            # ------------------------------------------------
+            # Column Count
+            # ------------------------------------------------
+
+            if actual_columns != expected_columns:
+
                 self.results.append(
                     {
                         "check": "Column count",
                         "status": "FAIL",
                         "message": (
-                            f"Column count is not as expected. "
-                            f"Expected: {self.config.expected_columns}, "
-                            f"Actual: {columns}"
+                            f"Expected "
+                            f"{expected_columns} columns, "
+                            f"but found "
+                            f"{actual_columns}."
                         ),
                     }
                 )
+
                 return False
+
+            # ------------------------------------------------
+            # Shape Passed
+            # ------------------------------------------------
 
             self.results.append(
                 {
-                    "check": "Column count",
+                    "check": "Dataset shape",
                     "status": "PASS",
                     "message": (
-                        f"Row count is as expected. "
-                        f"Expected: {expected_rows}, "
-                        f"Actual: {actual_rows}"
+                        f"Dataset contains "
+                        f"{actual_rows} rows "
+                        f"and {actual_columns} columns."
                     ),
                 }
             )
 
             return True
+
         except Exception as e:
-            raise HousePricePredictionException(e, sys) from e
+
+            raise HousePricePredictionException(
+                e,
+                sys,
+            ) from e
 
     # ======================================================
     # Required Column Validation
     # ======================================================
 
     def validate_required_columns(self) -> bool:
+
         try:
+
             if self.df is None:
+
                 raise ValueError(
                     "Dataset not loaded. "
                     "Call load_dataset() first."
                 )
+
             missing_columns = [
-                col for col in self.config.required_columns
-                if col not in self.df.columns
+                column
+                for column in self.config.required_columns
+                if column not in self.df.columns
             ]
+
             if missing_columns:
+
                 self.results.append(
                     {
                         "check": "Required columns",
                         "status": "FAIL",
                         "message": (
-                            f"Missing required columns: "
+                            "Missing required columns: "
                             f"{', '.join(missing_columns)}"
                         ),
                     }
                 )
+
                 return False
 
             self.results.append(
@@ -170,50 +251,58 @@ class DataValidation:
                     "check": "Required columns",
                     "status": "PASS",
                     "message": (
-                        f"All required columns are present."
+                        "All required columns "
+                        "are present."
                     ),
                 }
             )
 
             return True
+
         except Exception as e:
-            raise HousePricePredictionException(e, sys) from e
+
+            raise HousePricePredictionException(
+                e,
+                sys,
+            ) from e
+
     # ======================================================
     # Target Validation
     # ======================================================
 
     def validate_target(self) -> bool:
+
         try:
+
             if self.df is None:
+
                 raise ValueError(
                     "Dataset not loaded. "
                     "Call load_dataset() first."
                 )
-            target_column = self.config.required_columns[0]
+
+            target_column = (
+                self.config.target_column
+            )
+
+            # ------------------------------------------------
+            # Target Column Existence
+            # ------------------------------------------------
+
             if target_column not in self.df.columns:
+
                 self.results.append(
                     {
                         "check": "Target column existence",
                         "status": "FAIL",
                         "message": (
-                            f"Target column '{target_column}' "
-                            f"not found in dataset."
+                            f"Target column "
+                            f"'{target_column}' "
+                            "not found in dataset."
                         ),
                     }
                 )
-                return False
-            missing_values = self.df[target_column].isnull().sum()
-            if missing_values > 0:
-                self.results.append(
-                    {
-                        "check": "Target column missing values",
-                        "status": "FAIL",
-                        "message": (
-                            f"Target column '{target_column}' "
-                            f"contains {missing_values} missing values."
-                        ),
-                    }
-                )
+
                 return False
 
             self.results.append(
@@ -221,40 +310,111 @@ class DataValidation:
                     "check": "Target column existence",
                     "status": "PASS",
                     "message": (
-                        f"Target column '{target_column}' "
-                        f"found in dataset."
+                        f"Target column "
+                        f"'{target_column}' "
+                        "found in dataset."
                     ),
                 }
             )
 
-            # Target must be positive for house prices.
-            invalid_target_values = (self.df[target_column] <= 0).sum()
-            if invalid_target_values > 0:
+            # ------------------------------------------------
+            # Target Missing Values
+            # ------------------------------------------------
+
+            missing_values = (
+                self.df[target_column]
+                .isnull()
+                .sum()
+            )
+
+            if missing_values > 0:
+
                 self.results.append(
                     {
-                        "check": "Target column invalid values",
+                        "check": (
+                            "Target column missing values"
+                        ),
                         "status": "FAIL",
                         "message": (
-                            f"Target column '{target_column}' "
-                            f"contains {invalid_target_values} non-positive values."
+                            f"Target column "
+                            f"'{target_column}' "
+                            f"contains "
+                            f"{missing_values} "
+                            "missing values."
                         ),
                     }
                 )
+
                 return False
+
             self.results.append(
                 {
-                    "check": "Target column invalid values",
+                    "check": (
+                        "Target column missing values"
+                    ),
                     "status": "PASS",
                     "message": (
-                        f"All values in target column '{target_column}' "
-                        f"are positive."
+                        f"Target column "
+                        f"'{target_column}' "
+                        "contains no missing "
+                        "values."
                     ),
                 }
             )
+
+            # ------------------------------------------------
+            # Target Value Validation
+            # ------------------------------------------------
+
+            # House prices must be positive.
+
+            invalid_target_values = (
+                self.df[target_column] <= 0
+            ).sum()
+
+            if invalid_target_values > 0:
+
+                self.results.append(
+                    {
+                        "check": (
+                            "Target column invalid values"
+                        ),
+                        "status": "FAIL",
+                        "message": (
+                            f"Target column "
+                            f"'{target_column}' "
+                            f"contains "
+                            f"{invalid_target_values} "
+                            "non-positive values."
+                        ),
+                    }
+                )
+
+                return False
+
+            self.results.append(
+                {
+                    "check": (
+                        "Target column invalid values"
+                    ),
+                    "status": "PASS",
+                    "message": (
+                        f"All values in target "
+                        f"column '{target_column}' "
+                        "are positive."
+                    ),
+                }
+            )
+
             return True
 
         except Exception as e:
-            raise HousePricePredictionException(e, sys) from e
+
+            raise HousePricePredictionException(
+                e,
+                sys,
+            ) from e
+
     # ======================================================
     # Data Quality Validation
     # ======================================================
@@ -263,8 +423,15 @@ class DataValidation:
 
         try:
 
+            if self.df is None:
+
+                raise ValueError(
+                    "Dataset not loaded. "
+                    "Call load_dataset() first."
+                )
+
             # ------------------------------------------------
-            # Duplicate rows
+            # Duplicate Rows
             # ------------------------------------------------
 
             duplicate_count = (
@@ -297,7 +464,7 @@ class DataValidation:
                 )
 
             # ------------------------------------------------
-            # Missing feature values
+            # Missing Feature Values
             # ------------------------------------------------
 
             missing_values = (
@@ -400,7 +567,9 @@ class DataValidation:
 
             elif has_warning:
 
-                overall_status = "PASS WITH WARNINGS"
+                overall_status = (
+                    "PASS WITH WARNINGS"
+                )
 
             else:
 
@@ -450,6 +619,10 @@ class DataValidation:
                 "Starting data validation."
             )
 
+            # ------------------------------------------------
+            # File Validation
+            # ------------------------------------------------
+
             file_valid = self.validate_file(
                 data_path
             )
@@ -460,25 +633,51 @@ class DataValidation:
 
                 return False
 
+            # ------------------------------------------------
+            # Load Dataset
+            # ------------------------------------------------
+
             self.load_dataset(
                 data_path
             )
 
-            shape_valid = (
-                self.validate_shape()
-            )
+            # ------------------------------------------------
+            # Dataset Shape
+            # ------------------------------------------------
+
+            self.validate_shape()
+
+            # ------------------------------------------------
+            # Required Columns
+            # ------------------------------------------------
 
             required_columns_valid = (
                 self.validate_required_columns()
             )
 
+            # ------------------------------------------------
+            # Target Validation
+            # ------------------------------------------------
+
             if required_columns_valid:
 
                 self.validate_target()
 
+            # ------------------------------------------------
+            # Data Quality
+            # ------------------------------------------------
+
             self.validate_quality()
 
+            # ------------------------------------------------
+            # Save Report
+            # ------------------------------------------------
+
             self.save_validation_report()
+
+            # ------------------------------------------------
+            # Determine Overall Result
+            # ------------------------------------------------
 
             has_failure = any(
                 result["status"] == "FAIL"
